@@ -225,7 +225,7 @@
     const baseISR = sueldo - isss - afp; // Sueldo después de ISSS y AFP
     const isr = calcularISR(baseISR); // Calculo ISR sobre la base ajustada
     const descuentosTotales = sueldo - isss - afp;
-    const sueldoLiquido = descuentosTotales;
+    const sueldoLiquido = descuentosTotales - isr;
 
     // Lo que paga el empleador (patrón)
     const isssTotal = sueldo > 1000 ? 75 : sueldo * 0.075; // ISSS total
