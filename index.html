@@ -190,7 +190,7 @@
                 <th>ISSS</th>
                 <th>AFP</th>
                 <th>ISR</th>
-                <th>Descuentos Totales</th>
+                <th>Renta Imponible</th>
                 <th>Sueldo Líquido</th>
                 <th>ISSS Patronal</th>
                 <th>AFP Patronal</th>
@@ -224,7 +224,7 @@
     const afp = sueldo * 0.0725; // AFP 7.25%
     const baseISR = sueldo - isss - afp; // Sueldo después de ISSS y AFP
     const isr = calcularISR(baseISR); // Calculo ISR sobre la base ajustada
-    const descuentosTotales = isss + afp + isr;
+    const descuentosTotales = isss + afp;
     const sueldoLiquido = sueldo - descuentosTotales;
 
     // Lo que paga el empleador (patrón)
