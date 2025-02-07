@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='90' font-size='90'>💲</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <title>Calculadora Salarial</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #261646fc;
+        color: #FFFFFF;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    h1 {
+        margin-top: 20px;
+        text-align: center;
+    }
+    
+    .formulario {
+        background-color: #481c80;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin: 20px;
+        width: 90%;
+        max-width: 400px;
+    }
+    
+    .formulario label {
+        display: block;
+        margin: 10px 0 5px;
+    }
+    
+    .formulario input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 5px;
+    }
+    
+    /* Estilos de la tabla */
+    /* Contenedor responsivo */
+.table-container {
+    width: 100%;
+    overflow-x: auto;  /* Permite desplazamiento horizontal en pantallas pequeñas */
+}
+
+/* Ajustes para la tabla */
+  table {
+        width: 95%;
+        max-width: 800px;
+        min-width: 600px;
+        margin: 20px auto;
+        border-collapse: collapse;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    table thead {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        text-transform: uppercase;
+    }
+    
+    table th, table td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    table tbody tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(1.02);
+        transition: all 0.2s ease-in-out;
+    }
+    
+    /* Botón rojo */
+    .boton-rojo {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+        position: relative;
+    }
+    
+    .boton-rojo:hover {
+        background-color: #cc0000;
+    }
+    
+    /* Tooltip flotante */
+    .boton-rojo::after {
+        content: "Eliminar";
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 5px 8px;
+        border-radius: 5px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease-in-out;
+    }
+    
+    .boton-rojo:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Botón descargar */
+.boton-descargar {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px;
+        }
+
+    /* Footer */
+    footer {
+        background-color: #4e169d;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        width: 100%;
+    }
+    
+    /* Diseño Responsive */
+    @media (max-width: 768px) {
+    .formulario {
+        width: 75% !important;
+        padding: 15px !important;
+    }
+
+    table {
+        font-size: 12px;
+    }
+    table th, table td {
+        padding: 8px;
+    }
+}
+   
+
+</style>
+    
+</head>
+<body>
+    <h1>Calculadora de Salarios El Salvador</h1>
+    <div class="formulario">
+        <label for="nombres">Nombres:</label>
+        <input type="text" id="nombres">
+        <label for="apellidos">Apellidos:</label>
+        <input type="text" id="apellidos">
+        <label for="cargo">Cargo:</label>
+        <input type="text" id="cargo">
+        <label for="sueldo">Sueldo:</label>
+        <input type="number" id="sueldo" min="0">
+        <button class="boton-descargar" onclick="agregarEmpleado()">Agregar</button>
+    </div>
+
+    <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Cargo</th>
+                <th>Sueldo</th>
+                <th>ISSS</th>
+                <th>AFP</th>
+                <th>ISR</th>
+                <th>Descuentos Totales</th>
+                <th>Sueldo Líquido</th>
+                <th>ISSS Patronal</th>
+                <th>AFP Patronal</th>
+                <th>ISSS Total</th>
+                <th>AFP Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-empleados"></tbody>
+    </table>
+</div>
+    <button class="boton-descargar" onclick="descargarExcel()">Descargar Excel</button>
+
+    <footer>
+        <p>© 2025 - Esstudiante | Calculadora de Salario</p>
+    </footer>
+
+    <script>
+        const empleados = JSON.parse(localStorage.getItem('empleados')) || [];
+
+        function calcularISR(sueldo) {
+            // Tabla de ISR actualizada
+            if (sueldo <= 472.00) return 0;
+            if (sueldo <= 895.24) return ((sueldo - 472.01) * 0.1) + 17.67;
+            if (sueldo <= 2038.10) return ((sueldo - 895.25) * 0.2) + 60.00;
+            return ((sueldo - 2038.11) * 0.3) + 288.57;
+        }
+
+        function calcularDescuentos(sueldo) {
+    const isss = sueldo > 1000 ? 30 : sueldo * 0.03; // ISSS límite
+    const afp = sueldo * 0.0725; // AFP 7.25%
+    const baseISR = sueldo - isss - afp; // Sueldo después de ISSS y AFP
+    const isr = calcularISR(baseISR); // Calculo ISR sobre la base ajustada
+    const descuentosTotales = isss + afp + isr;
+    const sueldoLiquido = sueldo - descuentosTotales;
+
+    // Lo que paga el empleador (patrón)
+    const isssTotal = sueldo > 1000 ? 75 : sueldo * 0.075; // ISSS total
+    const afpTotal = sueldo * 0.0875; // AFP total 8.75%
+
+    return { isss, afp, isr, descuentosTotales, sueldoLiquido, isssTotal, afpTotal };
+}
+
+
+        function renderizarTabla() {
+            const tabla = document.getElementById('tabla-empleados');
+            tabla.innerHTML = '';
+            empleados.forEach((empleado, index) => {
+                const descuentos = calcularDescuentos(empleado.sueldo);
+
+                row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${empleado.nombres}</td>
+                    <td>${empleado.apellidos}</td>
+                    <td>${empleado.cargo}</td>
+                    <td>${empleado.sueldo.toFixed(2)}</td>
+                    <td>${descuentos.isss.toFixed(2)}</td>
+                    <td>${descuentos.afp.toFixed(2)}</td>
+                    <td>${descuentos.isr.toFixed(2)}</td>
+                    <td>${descuentos.descuentosTotales.toFixed(2)}</td>
+                    <td>${descuentos.sueldoLiquido.toFixed(2)}</td>
+                    <td>${descuentos.isssTotal.toFixed(2)}</td>
+                    <td>${descuentos.afpTotal.toFixed(2)}</td>
+                    <td>${(descuentos.isss + descuentos.isssTotal).toFixed(2)}</td>
+                    <td>${(descuentos.afp + descuentos.afpTotal).toFixed(2)}</td>
+                    <td><button class="boton-rojo" onclick="eliminarEmpleado(${index})">X</button></td>
+                `;
+                tabla.appendChild(row);
+            });
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+        }
+
+        function agregarEmpleado() {
+    const nombres = document.getElementById('nombres').value;
+    const apellidos = document.getElementById('apellidos').value;
+    const cargo = document.getElementById('cargo').value;
+    const sueldo = parseFloat(document.getElementById('sueldo').value);
+
+    if (nombres && apellidos && cargo && sueldo >= 0) {
+        empleados.push({ nombres, apellidos, cargo, sueldo });
+        renderizarTabla();
+
+        // Limpiar las cajas de texto
+        document.getElementById('nombres').value = '';
+        document.getElementById('apellidos').value = '';
+        document.getElementById('cargo').value = '';
+        document.getElementById('sueldo').value = '';
+    } else {
+        alert('Por favor, completa todos los campos.');
+    }
+}
+
+
+        function eliminarEmpleado(index) {
+            empleados.splice(index, 1);
+            renderizarTabla();
+        }
+
+        function descargarExcel() {
+    // Crear una matriz con los encabezados y los datos
+    const data = [
+        [
+            "Nombres", 
+            "Apellidos", 
+            "Cargo", 
+            "Sueldo", 
+            "ISSS", 
+            "AFP", 
+            "ISR", 
+            "Descuentos Totales", 
+            "Sueldo Líquido", 
+            "ISSS Patronal", 
+            "AFP Patronal",
+            "ISSS Total",   // Nueva columna
+            "AFP Total"     // Nueva columna
+        ],
+    ];
+
+    empleados.forEach((empleado) => {
+        const descuentos = calcularDescuentos(empleado.sueldo);
+        data.push([
+            empleado.nombres,
+            empleado.apellidos,
+            empleado.cargo,
+            empleado.sueldo.toFixed(2),
+            descuentos.isss.toFixed(2),
+            descuentos.afp.toFixed(2),
+            descuentos.isr.toFixed(2),
+            descuentos.descuentosTotales.toFixed(2),
+            descuentos.sueldoLiquido.toFixed(2),
+            descuentos.isssTotal.toFixed(2),
+            descuentos.afpTotal.toFixed(2),
+            (descuentos.isss + descuentos.isssTotal).toFixed(2), // ISSS Total
+            (descuentos.afp + descuentos.afpTotal).toFixed(2)  // AFP Total
+        ]);
+    });
+
+    // Crear un libro de trabajo y una hoja de trabajo
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Empleados");
+
+    // Descargar el archivo Excel
+    XLSX.writeFile(workbook, "empleados.xlsx");
+}
+
+        renderizarTabla();
+    </script>
+</body>
+</html>
